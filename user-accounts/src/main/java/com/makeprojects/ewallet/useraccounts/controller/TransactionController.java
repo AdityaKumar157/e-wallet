@@ -1,15 +1,17 @@
 package com.makeprojects.ewallet.useraccounts.controller;
 
+import com.makeprojects.ewallet.shared.model.Account;
 import com.makeprojects.ewallet.shared.model.Transaction;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/txn")
@@ -26,5 +28,14 @@ public class TransactionController {
     public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionDto transactionDto) {
         Transaction createdTransaction = this.accountService.sendMoney(transactionDto);
         return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/statement/{accountId}")
+    public ResponseEntity<?> getMiniStatement(@PathVariable UUID accountId) {
+        if(!this.accountService.isLoggedInUserAccount(accountId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is invalid");
+        }
+        List<Transaction> miniStatement = this.accountService.getMiniStatementOfUerAccount(accountId);
+        return ResponseEntity.ok(miniStatement);
     }
 }

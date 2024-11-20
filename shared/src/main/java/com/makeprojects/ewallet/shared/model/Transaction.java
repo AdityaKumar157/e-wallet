@@ -1,5 +1,6 @@
 package com.makeprojects.ewallet.shared.model;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,9 +21,11 @@ public class Transaction {
     private UUID transactionId;
 
     @ManyToOne
+    @JsonIncludeProperties({"accountId", "user"})
     private Account senderAccount;
 
     @ManyToOne
+    @JsonIncludeProperties({"accountId", "user"})
     private Account receiverAccount;
 
     private double amount;
