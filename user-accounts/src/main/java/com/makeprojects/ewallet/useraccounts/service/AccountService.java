@@ -1,13 +1,20 @@
 package com.makeprojects.ewallet.useraccounts.service;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.useraccounts.model.Account;
-import com.makeprojects.ewallet.useraccounts.model.User;
+import com.makeprojects.ewallet.shared.model.Transaction;
+import com.makeprojects.ewallet.shared.model.Account;
+import com.makeprojects.ewallet.shared.model.User;
+import com.makeprojects.ewallet.transactions.service.TransactionService;
+import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
+import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,10 +23,14 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final TransactionService transactionService;
+    private final TransactionMapper transactionMapper;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
         this.accountRepository = accountRepository;
+        this.transactionService = transactionService;
+        this.transactionMapper = transactionMapper;
     }
 
     public Account addAccount(User user) {
@@ -84,5 +95,31 @@ public class AccountService {
             log.error(error);
             throw e;
         }
+    }
+
+    public void saveAccounts(Collection<Account> accountsCollection) {
+        try {
+            this.accountRepository.saveAll(accountsCollection);
+            log.info("Saved all {} accounts.", accountsCollection.size());
+        } catch (Exception e) {
+            String error = String.format("Exception while saving one of the %s accounts. Exception: %s", accountsCollection.size(), e);
+            log.error(error);
+            throw e;
+        }
+    }
+
+    @Transactional
+    public Transaction sendMoney(TransactionDto transactionDto) {
+        Transaction transaction = this.transactionMapper.mapToTransaction(transactionDto);
+        Account senderAccount = transaction.getSenderAccount();
+        Account receiverAccount = transaction.getReceiverAccount();
+        senderAccount.send(receiverAccount, transaction.getAmount());
+        Transaction createdTransaction = this.transactionService.createTransaction(transaction);
+        this.accountRepository.saveAll(List.of(senderAccount, receiverAccount));
+        return createdTransaction;
+    }
+
+    public List<Account> getAllAccountsByIds(List<UUID> accountIds) {
+        return this.accountRepository.findAllById(accountIds);
     }
 }

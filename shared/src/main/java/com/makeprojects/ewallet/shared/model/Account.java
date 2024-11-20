@@ -1,4 +1,4 @@
-package com.makeprojects.ewallet.useraccounts.model;
+package com.makeprojects.ewallet.shared.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -32,4 +32,13 @@ public class Account {
 
     @Builder.Default
     private boolean kycComplete = false;
+
+    public void send(Account receiverAccount, double amount) {
+        if (this.equals(receiverAccount)) {
+            this.balance += amount;
+        } else {
+            this.balance -= amount;
+            receiverAccount.balance += amount;
+        }
+    }
 }
