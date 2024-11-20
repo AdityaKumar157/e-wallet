@@ -13,11 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup JDK
-        uses: actions/setup-java@v2
-        with:
-          distribution: "openjdk"
-          java-version: "22"
+      - name: Download and install OpenJDK 22
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-22-jdk
+          export JAVA_HOME=/usr/lib/jvm/java-22-openjdk-amd64
+          export JAVA_PATH=$JAVA_HOME/bin:$PATH
+
+      - name: Verify Java installation
+        run: |
+          java -version
 
       - name: Build with Maven
         run: mvn clean install
@@ -38,7 +43,7 @@ jobs:
           EC2_USER: "some-user-name"
         run: |
           ssh -i ~./ssh/id_rsa $EC2_USER$EC2_HOST << 'EOF'
-            # Kill any spring boot application running on default port
+            # Kill any spring boot application running on the default port
             PID=$(lsof -t -i:7070)
             if [ -n "$PID" ]; then
               kill -9 $PID
