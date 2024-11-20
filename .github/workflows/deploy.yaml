@@ -15,8 +15,13 @@ jobs:
 
       - name: Download and install OpenJDK 22
         run: |
-          sudo apt update
-          sudo apt install -y openjdk-22-jdk
+          JDK_VERSION=22
+          INSTALL_DIR=$HOME/openjdk
+          wget https://download.java.net/openjdk/jdk22/ri/openjdk-22_linux-x64_bin.tar.gz -P /tmp
+          mkdir -p $INSTALL_DIR
+          tar -xzf /tmp/openjdk-22_linux-x64_bin.tar.gz -C $INSTALL_DIR
+          echo "JAVA_HOME=$INSTALL_DIR/jdk-22" >> $GITHUB_ENV
+          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
 
       - name: Verify Java installation
         run: |
