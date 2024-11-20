@@ -80,6 +80,11 @@
             <artifactId>shared</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.makeprojects</groupId>
+            <artifactId>transactions</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <properties>

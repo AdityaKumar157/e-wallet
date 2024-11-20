@@ -1,9 +1,8 @@
 package com.makeprojects.ewallet.useraccounts.service;
 
-import com.makeprojects.ewallet.shared.exceptions.EntityNotSavedException;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.useraccounts.model.Account;
-import com.makeprojects.ewallet.useraccounts.model.User;
+import com.makeprojects.ewallet.shared.model.Account;
+import com.makeprojects.ewallet.shared.model.User;
 import com.makeprojects.ewallet.useraccounts.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 

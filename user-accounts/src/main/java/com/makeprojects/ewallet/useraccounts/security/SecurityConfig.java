@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,9 +38,10 @@ public class SecurityConfig {
         jwtAuthenticationFilter.setFilterProcessesUrl("/auth/login");
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(AbstractHttpConfigurer::disable);
 
         httpSecurity.authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/account/**", "/user/**").hasAnyRole("USER")
+                    authorize.requestMatchers("/account/**", "/user/**").hasRole("USER")
                             .requestMatchers("/public/**", "/auth/**").permitAll()
                             .anyRequest().authenticated();
                 })

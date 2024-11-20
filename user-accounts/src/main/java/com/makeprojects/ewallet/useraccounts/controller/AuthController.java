@@ -2,7 +2,7 @@ package com.makeprojects.ewallet.useraccounts.controller;
 
 import com.makeprojects.ewallet.useraccounts.dto.AuthDto;
 import com.makeprojects.ewallet.useraccounts.dto.AuthResponse;
-import com.makeprojects.ewallet.useraccounts.model.User;
+import com.makeprojects.ewallet.shared.model.User;
 import com.makeprojects.ewallet.useraccounts.service.UserService;
 import com.makeprojects.ewallet.useraccounts.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +12,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 
-@Controller
+@RestController
 @RequestMapping("/auth")
 public class AuthController {
 
