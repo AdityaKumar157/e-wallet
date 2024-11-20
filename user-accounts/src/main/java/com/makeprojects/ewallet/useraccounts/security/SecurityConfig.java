@@ -41,7 +41,7 @@ public class SecurityConfig {
         httpSecurity.cors(AbstractHttpConfigurer::disable);
 
         httpSecurity.authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/account/**", "/user/**").hasRole("USER")
+                    authorize.requestMatchers("/account/**", "/user/**", "/txn/**").hasRole("USER")
                             .requestMatchers("/public/**", "/auth/**").permitAll()
                             .anyRequest().authenticated();
                 })

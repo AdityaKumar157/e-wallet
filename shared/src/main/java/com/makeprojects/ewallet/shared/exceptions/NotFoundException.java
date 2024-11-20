@@ -13,4 +13,9 @@ public class NotFoundException extends RuntimeException {
     this.value = value;
   }
 
+  public NotFoundException(Class<?> clazz) {
+    super(String.format("Cannot find any %s.", clazz));
+    this.clazz = clazz;
+  }
+
 }

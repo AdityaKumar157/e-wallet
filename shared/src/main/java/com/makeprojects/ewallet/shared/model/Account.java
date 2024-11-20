@@ -1,6 +1,7 @@
 package com.makeprojects.ewallet.shared.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Account {
 
     @JsonIgnore
     @OneToOne
+    @JsonIncludeProperties({"userId", "name"})
     private User user;
 
     @Builder.Default

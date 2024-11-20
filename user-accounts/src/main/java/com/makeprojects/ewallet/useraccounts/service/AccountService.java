@@ -10,9 +10,12 @@ import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -108,18 +111,30 @@ public class AccountService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Transaction sendMoney(TransactionDto transactionDto) {
         Transaction transaction = this.transactionMapper.mapToTransaction(transactionDto);
         Account senderAccount = transaction.getSenderAccount();
         Account receiverAccount = transaction.getReceiverAccount();
-        senderAccount.send(receiverAccount, transaction.getAmount());
         Transaction createdTransaction = this.transactionService.createTransaction(transaction);
+        senderAccount.send(receiverAccount, transaction.getAmount());
         this.accountRepository.saveAll(List.of(senderAccount, receiverAccount));
         return createdTransaction;
     }
 
+    public List<Transaction> getMiniStatementOfUerAccount(UUID accountId) {
+        return this.transactionService.getMiniStatement(accountId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+    }
+
     public List<Account> getAllAccountsByIds(List<UUID> accountIds) {
         return this.accountRepository.findAllById(accountIds);
+    }
+
+    public boolean isLoggedInUserAccount(UUID accountId) {
+        String tokenUsername = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account requestAccount = this.getAccountById(accountId);
+        String requestUsername = requestAccount.getUser().getUserName();
+
+        return tokenUsername.equals(requestUsername);
     }
 }
