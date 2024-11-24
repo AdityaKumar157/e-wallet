@@ -1,4 +1,4 @@
-package com.makeprojects.ewallet.shared.model;
+package com.makeprojects.ewallet.shared.database.model;
 
 import jakarta.persistence.*;
 import lombok.*;

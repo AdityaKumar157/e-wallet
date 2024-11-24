@@ -1,9 +1,9 @@
-package com.makeprojects.ewallet.useraccounts.service;
+package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.shared.model.Account;
-import com.makeprojects.ewallet.shared.model.User;
-import com.makeprojects.ewallet.useraccounts.repository.UserRepository;
+import com.makeprojects.ewallet.shared.database.model.Account;
+import com.makeprojects.ewallet.shared.database.model.User;
+import com.makeprojects.ewallet.useraccounts.database.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

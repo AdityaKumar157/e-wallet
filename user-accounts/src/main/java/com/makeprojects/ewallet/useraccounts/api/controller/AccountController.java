@@ -1,8 +1,8 @@
-package com.makeprojects.ewallet.useraccounts.controller;
+package com.makeprojects.ewallet.useraccounts.api.controller;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.shared.model.Account;
-import com.makeprojects.ewallet.useraccounts.service.AccountService;
+import com.makeprojects.ewallet.shared.database.model.Account;
+import com.makeprojects.ewallet.useraccounts.core.service.implementation.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

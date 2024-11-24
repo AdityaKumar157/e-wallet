@@ -1,8 +1,8 @@
-package com.makeprojects.ewallet.transactions.service;
+package com.makeprojects.ewallet.transactions.core.service.implementation;
 
 import com.makeprojects.ewallet.shared.exceptions.InvalidTransactionException;
-import com.makeprojects.ewallet.shared.model.Transaction;
-import com.makeprojects.ewallet.transactions.repository.TransactionRepository;
+import com.makeprojects.ewallet.shared.database.model.Transaction;
+import com.makeprojects.ewallet.transactions.database.repository.TransactionRepository;
 import com.makeprojects.ewallet.transactions.util.TransactionValidation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

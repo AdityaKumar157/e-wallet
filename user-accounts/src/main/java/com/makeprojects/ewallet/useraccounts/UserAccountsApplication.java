@@ -7,9 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = {"com.makeprojects.ewallet.transactions.repository",
-        "com.makeprojects.ewallet.useraccounts.repository"})
-@EntityScan(basePackages = "com.makeprojects.ewallet.shared.model")
+@EnableJpaRepositories(basePackages = {"com.makeprojects.ewallet.transactions.database.repository",
+        "com.makeprojects.ewallet.useraccounts.database.repository"})
+@EntityScan(basePackages = "com.makeprojects.ewallet.shared.database.model")
 @ComponentScan(basePackages = {
         "com.makeprojects.ewallet.useraccounts",
         "com.makeprojects.ewallet.shared",

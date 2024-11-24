@@ -1,6 +1,6 @@
 package com.makeprojects.ewallet.transactions.util;
 
-import com.makeprojects.ewallet.shared.model.Transaction;
+import com.makeprojects.ewallet.shared.database.model.Transaction;
 
 public abstract class TransactionValidation {
 

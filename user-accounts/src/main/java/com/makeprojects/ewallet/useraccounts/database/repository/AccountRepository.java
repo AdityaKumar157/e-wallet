@@ -1,6 +1,6 @@
-package com.makeprojects.ewallet.useraccounts.repository;
+package com.makeprojects.ewallet.useraccounts.database.repository;
 
-import com.makeprojects.ewallet.shared.model.Account;
+import com.makeprojects.ewallet.shared.database.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
