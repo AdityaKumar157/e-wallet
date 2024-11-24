@@ -3,7 +3,7 @@ package com.makeprojects.ewallet.useraccounts.api.controller;
 import com.makeprojects.ewallet.useraccounts.dto.AuthDto;
 import com.makeprojects.ewallet.useraccounts.dto.AuthResponse;
 import com.makeprojects.ewallet.shared.database.model.User;
-import com.makeprojects.ewallet.useraccounts.core.service.implementation.UserService;
+import com.makeprojects.ewallet.useraccounts.core.service.implementation.UserServiceImpl;
 import com.makeprojects.ewallet.useraccounts.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +24,11 @@ import java.util.Collections;
 public class AuthController {
 
     private final JwtUtil jwtUtil;
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthController(JwtUtil jwtUtil, UserService userService, AuthenticationManager authenticationManager) {
+    public AuthController(JwtUtil jwtUtil, UserServiceImpl userService, AuthenticationManager authenticationManager) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
         this.authenticationManager = authenticationManager;

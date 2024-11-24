@@ -2,7 +2,7 @@ package com.makeprojects.ewallet.useraccounts.api.controller;
 
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
-import com.makeprojects.ewallet.useraccounts.core.service.implementation.AccountService;
+import com.makeprojects.ewallet.useraccounts.core.service.implementation.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import java.util.UUID;
 @RequestMapping("/txn")
 public class TransactionController {
 
-    private final AccountService accountService;
+    private final AccountServiceImpl accountService;
 
     @Autowired
-    public TransactionController(AccountService accountService) {
+    public TransactionController(AccountServiceImpl accountService) {
         this.accountService = accountService;
     }
 

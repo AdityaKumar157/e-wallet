@@ -2,7 +2,7 @@ package com.makeprojects.ewallet.useraccounts.api.controller;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.User;
-import com.makeprojects.ewallet.useraccounts.core.service.implementation.UserService;
+import com.makeprojects.ewallet.useraccounts.core.service.implementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
