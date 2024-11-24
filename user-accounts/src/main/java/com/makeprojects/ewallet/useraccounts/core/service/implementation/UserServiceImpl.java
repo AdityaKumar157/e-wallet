@@ -3,6 +3,7 @@ package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Account;
 import com.makeprojects.ewallet.shared.database.model.User;
+import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
 import com.makeprojects.ewallet.useraccounts.database.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,11 @@ import java.util.UUID;
 public class UserServiceImpl {
 
     private final UserRepository userRepository;
-    private final AccountServiceImpl accountService;
+    private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AccountServiceImpl accountService, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, AccountService accountService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountService = accountService;
         this.passwordEncoder = passwordEncoder;
