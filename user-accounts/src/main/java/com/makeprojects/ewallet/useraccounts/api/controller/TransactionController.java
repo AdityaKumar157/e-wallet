@@ -1,6 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.api.controller;
 
 import com.makeprojects.ewallet.shared.database.model.Transaction;
+import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.core.service.implementation.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,10 @@ import java.util.UUID;
 @RequestMapping("/txn")
 public class TransactionController {
 
-    private final AccountServiceImpl accountService;
+    private final AccountService accountService;
 
     @Autowired
-    public TransactionController(AccountServiceImpl accountService) {
+    public TransactionController(AccountService accountService) {
         this.accountService = accountService;
     }
 
@@ -30,10 +31,10 @@ public class TransactionController {
 
     @GetMapping("/statement/{accountId}")
     public ResponseEntity<?> getMiniStatement(@PathVariable UUID accountId) {
-        if(!this.accountService.isLoggedInUserAccount(accountId)) {
+        if(!((AccountServiceImpl) this.accountService).isLoggedInUserAccount(accountId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is invalid");
         }
-        List<Transaction> miniStatement = this.accountService.getMiniStatementOfUerAccount(accountId);
+        List<Transaction> miniStatement = this.accountService.getMiniStatementOfUserAccount(accountId);
         return ResponseEntity.ok(miniStatement);
     }
 }

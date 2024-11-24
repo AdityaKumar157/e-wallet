@@ -1,55 +1,37 @@
 package com.makeprojects.ewallet.transactions.core.service.implementation;
 
+//<editor-fold desc="Imports">
 import com.makeprojects.ewallet.shared.exceptions.InvalidTransactionException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
+import com.makeprojects.ewallet.transactions.core.service.definition.TransactionValidationService;
 import com.makeprojects.ewallet.transactions.database.repository.TransactionRepository;
-import com.makeprojects.ewallet.transactions.util.TransactionValidation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+//</editor-fold>
 
 @Service
 @Slf4j
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final TransactionValidationService transactionValidationService;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, @Qualifier("transaction") TransactionValidationService transactionValidationService) {
         this.transactionRepository = transactionRepository;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public Transaction createTransaction(Transaction transaction) {
-        if (!TransactionValidation.isValidTransaction(transaction)) {
-            log.error("Transaction is invalid.");
-            throw new InvalidTransactionException(String.format("Transaction with id %s is invalid.", transaction.getTransactionId()));
-        }
-
-        transaction.setWasSuccessful(true);
-        Transaction savedTransaction = this.transactionRepository.save(transaction);
-
-        log.info("Transaction successful");
-        return savedTransaction;
-    }
-
-    private boolean validateTransaction(Transaction transaction) {
-        if (!TransactionValidation.isValidTransaction(transaction)) {
-            log.error("Transaction is invalid.");
-            return false;
-        }
-        return true;
+        this.transactionValidationService = transactionValidationService;
     }
 
     //<editor-fold desc="TransactionService implementation">
@@ -204,6 +186,16 @@ public class TransactionServiceImpl implements TransactionService {
             log.error(errorMsg);
             throw e;
         }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Private methods">
+    private boolean validateTransaction(Transaction transaction) {
+        if (!this.transactionValidationService.validate(transaction)) {
+            log.error("Transaction is invalid.");
+            return false;
+        }
+        return true;
     }
     //</editor-fold>
 }
