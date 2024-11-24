@@ -1,9 +1,9 @@
-package com.makeprojects.ewallet.useraccounts.controller;
+package com.makeprojects.ewallet.useraccounts.api.controller;
 
 import com.makeprojects.ewallet.useraccounts.dto.AuthDto;
 import com.makeprojects.ewallet.useraccounts.dto.AuthResponse;
-import com.makeprojects.ewallet.shared.model.User;
-import com.makeprojects.ewallet.useraccounts.service.UserService;
+import com.makeprojects.ewallet.shared.database.model.User;
+import com.makeprojects.ewallet.useraccounts.core.service.implementation.UserService;
 import com.makeprojects.ewallet.useraccounts.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

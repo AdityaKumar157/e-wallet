@@ -1,6 +1,6 @@
-package com.makeprojects.ewallet.transactions.repository;
+package com.makeprojects.ewallet.transactions.database.repository;
 
-import com.makeprojects.ewallet.shared.model.Transaction;
+import com.makeprojects.ewallet.shared.database.model.Transaction;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

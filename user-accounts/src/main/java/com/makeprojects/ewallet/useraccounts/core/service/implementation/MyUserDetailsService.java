@@ -1,7 +1,7 @@
-package com.makeprojects.ewallet.useraccounts.service;
+package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
-import com.makeprojects.ewallet.shared.model.User;
-import com.makeprojects.ewallet.useraccounts.repository.UserRepository;
+import com.makeprojects.ewallet.shared.database.model.User;
+import com.makeprojects.ewallet.useraccounts.database.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
