@@ -15,14 +15,14 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class UserService {
+public class UserServiceImpl {
 
     private final UserRepository userRepository;
-    private final AccountService accountService;
+    private final AccountServiceImpl accountService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, AccountService accountService, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, AccountServiceImpl accountService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountService = accountService;
         this.passwordEncoder = passwordEncoder;

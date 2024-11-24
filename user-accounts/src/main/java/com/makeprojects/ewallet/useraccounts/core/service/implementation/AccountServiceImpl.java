@@ -4,7 +4,7 @@ import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.Account;
 import com.makeprojects.ewallet.shared.database.model.User;
-import com.makeprojects.ewallet.transactions.core.service.implementation.TransactionService;
+import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.database.repository.AccountRepository;
@@ -23,14 +23,14 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public class AccountService {
+public class AccountServiceImpl {
 
     private final AccountRepository accountRepository;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
+    public AccountServiceImpl(AccountRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
         this.accountRepository = accountRepository;
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
@@ -116,7 +116,7 @@ public class AccountService {
         Transaction transaction = this.transactionMapper.mapToTransaction(transactionDto);
         Account senderAccount = transaction.getSenderAccount();
         Account receiverAccount = transaction.getReceiverAccount();
-        Transaction createdTransaction = this.transactionService.createTransaction(transaction);
+        Transaction createdTransaction = this.transactionService.create(transaction);
         senderAccount.send(receiverAccount, transaction.getAmount());
         this.accountRepository.saveAll(List.of(senderAccount, receiverAccount));
         return createdTransaction;
