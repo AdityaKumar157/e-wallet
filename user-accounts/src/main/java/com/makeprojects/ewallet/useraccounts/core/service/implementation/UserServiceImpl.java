@@ -1,7 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.shared.database.model.Account;
+import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.UserService;
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("Failed to create an user.");
             }
 
-            Account savedUserAccount = this.accountService.addAccount(createdUser);
+            Wallet savedUserAccount = this.accountService.addAccount(createdUser);
             log.info(String.format("Successfully saved user with userId %s, accountId %s.", createdUser.getUserId(), savedUserAccount.getAccountId()));
 
             return createdUser;

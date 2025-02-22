@@ -1,7 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.api.controller;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.shared.database.model.Account;
+import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +25,9 @@ public class AccountController {
     }
 
     @GetMapping("/get-info")
-    public ResponseEntity<Account> getAccountInfoByUserId(@RequestParam UUID userId) {
+    public ResponseEntity<Wallet> getAccountInfoByUserId(@RequestParam UUID userId) {
         try {
-            Account account = this.accountService.getAccountByUserId(userId);
+            Wallet account = this.accountService.getAccountByUserId(userId);
             return ResponseEntity.ok(account);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -35,9 +35,9 @@ public class AccountController {
     }
 
     @GetMapping("/get-info/{accountId}")
-    public ResponseEntity<Account> getAccountInfoById(@PathVariable UUID accountId) {
+    public ResponseEntity<Wallet> getAccountInfoById(@PathVariable UUID accountId) {
         try {
-            Account account = this.accountService.get(accountId);
+            Wallet account = this.accountService.get(accountId);
             return ResponseEntity.ok(account);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();

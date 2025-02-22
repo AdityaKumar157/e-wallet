@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Account {
+public class Wallet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,7 +35,7 @@ public class Account {
     @Builder.Default
     private boolean kycComplete = false;
 
-    public void send(Account receiverAccount, double amount) {
+    public void send(Wallet receiverAccount, double amount) {
         if (this.equals(receiverAccount)) {
             this.balance += amount;
         } else {
