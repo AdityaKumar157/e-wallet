@@ -2,7 +2,7 @@ package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
-import com.makeprojects.ewallet.shared.database.model.Account;
+import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
 
     public boolean isLoggedInUserAccount(UUID accountId) {
         String tokenUsername = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account requestAccount = this.get(accountId);
+        Wallet requestAccount = this.get(accountId);
         String requestUsername = requestAccount.getUser().getUserName();
 
         return tokenUsername.equals(requestUsername);
@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     //<editor-fold desc="AccountService Implementation">
     @Override
-    public Account get(UUID id) {
+    public Wallet get(UUID id) {
         String errorMsg = EMPTY_STRING;
         try {
             if (id == null) {
@@ -58,11 +58,11 @@ public class AccountServiceImpl implements AccountService {
                 throw new NullPointerException(errorMsg);
             }
 
-            Optional<Account> optionalAccount = this.accountRepository.findById(id);
+            Optional<Wallet> optionalAccount = this.accountRepository.findById(id);
             if (optionalAccount.isEmpty()) {
                 errorMsg = String.format("Account with UUID %s is not found.", id);
                 log.error(errorMsg);
-                throw new NotFoundException(Account.class, "UUID", id);
+                throw new NotFoundException(Wallet.class, "UUID", id);
             }
 
             log.info(String.format("Successfully retrieved account with UUID '%s'.", id));
@@ -75,9 +75,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAll() {
+    public List<Wallet> getAll() {
         try {
-            List<Account> accountList = this.accountRepository.findAll();
+            List<Wallet> accountList = this.accountRepository.findAll();
             if (accountList.isEmpty()) {
                 log.error("No account found.");
             }
@@ -91,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account create(Account entity) {
+    public Wallet create(Wallet entity) {
         String errorMsg = EMPTY_STRING;
         try {
             if (entity == null) {
@@ -105,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new RuntimeException(errorMsg);
             }
 
-            Account createdAccount = this.accountRepository.save(entity);
+            Wallet createdAccount = this.accountRepository.save(entity);
             if (createdAccount == null) {
                 log.error("Failed to create an account.");
                 throw new RuntimeException("Failed to create an Account.");
@@ -121,7 +121,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account update(Account entity) {
+    public Wallet update(Wallet entity) {
         String errorMsg = EMPTY_STRING;
         try {
             if (entity == null) {
@@ -132,10 +132,10 @@ public class AccountServiceImpl implements AccountService {
             if (get(entity.getAccountId()) == null) {
                 errorMsg = String.format("Account with UUID %s doesn't exist in database.", entity.getAccountId());
                 log.error(errorMsg);
-                throw new NotFoundException(Account.class, "UUID", entity.getAccountId());
+                throw new NotFoundException(Wallet.class, "UUID", entity.getAccountId());
             }
 
-            Account updatedAccount = this.accountRepository.save(entity);
+            Wallet updatedAccount = this.accountRepository.save(entity);
             if (updatedAccount == null) {
                 errorMsg = String.format("Failed to updated an Account with UUID '%s'.", entity.getAccountId());
                 log.error(errorMsg);
@@ -163,7 +163,7 @@ public class AccountServiceImpl implements AccountService {
             if (get(id) == null) {
                 errorMsg = String.format("Account with UUID %s doesn't exist in database.", id);
                 log.error(errorMsg);
-                throw new NotFoundException(Account.class, "UUID", id);
+                throw new NotFoundException(Wallet.class, "UUID", id);
             }
 
             this.accountRepository.deleteById(id);
@@ -176,9 +176,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account addAccount(User user) {
+    public Wallet addAccount(User user) {
         try {
-            Account account = Account.builder()
+            Wallet account = Wallet.builder()
                     .user(user)
                     .build();
 
@@ -193,16 +193,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccountByUserId(UUID userId) {
+    public Wallet getAccountByUserId(UUID userId) {
         try {
-            Optional<Account> optionalAccount = this.accountRepository.findByUserId(userId);
+            Optional<Wallet> optionalAccount = this.accountRepository.findByUserId(userId);
             if(optionalAccount.isEmpty()) {
-                NotFoundException ex = new NotFoundException(Account.class, "userId", userId);
+                NotFoundException ex = new NotFoundException(Wallet.class, "userId", userId);
                 log.error(ex.getMessage());
                 throw ex;
             }
 
-            Account account = optionalAccount.get();
+            Wallet account = optionalAccount.get();
             log.info("Successfully fetched account with userId {}.", account.getUser().getUserId());
             return account;
         } catch (Exception e) {
@@ -213,7 +213,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccountByUser(User user) {
+    public Wallet getAccountByUser(User user) {
         try {
             return this.getAccountByUserId(user.getUserId());
         } catch (Exception e) {
@@ -224,12 +224,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAllAccountsByIds(List<UUID> accountIds) {
+    public List<Wallet> getAllAccountsByIds(List<UUID> accountIds) {
         return this.accountRepository.findAllById(accountIds);
     }
 
     @Override
-    public void saveAccounts(Collection<Account> accountsCollection) {
+    public void saveAccounts(Collection<Wallet> accountsCollection) {
         try {
             this.accountRepository.saveAll(accountsCollection);
             log.info("Saved all {} accounts.", accountsCollection.size());
@@ -244,8 +244,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(rollbackFor = Exception.class)
     public Transaction sendMoney(TransactionDto transactionDto) {
         Transaction transaction = this.transactionMapper.mapToTransaction(transactionDto);
-        Account senderAccount = transaction.getSenderAccount();
-        Account receiverAccount = transaction.getReceiverAccount();
+        Wallet senderAccount = transaction.getSenderAccount();
+        Wallet receiverAccount = transaction.getReceiverAccount();
         Transaction createdTransaction = this.transactionService.create(transaction);
         senderAccount.send(receiverAccount, transaction.getAmount());
         this.accountRepository.saveAll(List.of(senderAccount, receiverAccount));

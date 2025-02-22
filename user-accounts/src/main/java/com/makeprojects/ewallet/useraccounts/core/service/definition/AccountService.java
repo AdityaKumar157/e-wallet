@@ -1,7 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.core.service.definition;
 
 import com.makeprojects.ewallet.shared.core.definition.CRUDService;
-import com.makeprojects.ewallet.shared.database.model.Account;
+import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
@@ -10,17 +10,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public interface AccountService extends CRUDService<Account> {
+public interface AccountService extends CRUDService<Wallet> {
 
-    Account addAccount(User user);
+    Wallet addAccount(User user);
 
-    Account getAccountByUserId(UUID userId);
+    Wallet getAccountByUserId(UUID userId);
 
-    Account getAccountByUser(User user);
+    Wallet getAccountByUser(User user);
 
-    List<Account> getAllAccountsByIds(List<UUID> accountIds);
+    List<Wallet> getAllAccountsByIds(List<UUID> accountIds);
 
-    void saveAccounts(Collection<Account> accountsCollection);
+    void saveAccounts(Collection<Wallet> accountsCollection);
 
     Transaction sendMoney(TransactionDto transactionDto);
 

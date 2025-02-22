@@ -22,11 +22,11 @@ public class Transaction {
 
     @ManyToOne
     @JsonIncludeProperties({"accountId", "user"})
-    private Account senderAccount;
+    private Wallet senderAccount;
 
     @ManyToOne
     @JsonIncludeProperties({"accountId", "user"})
-    private Account receiverAccount;
+    private Wallet receiverAccount;
 
     private double amount;
     private boolean wasSuccessful;
