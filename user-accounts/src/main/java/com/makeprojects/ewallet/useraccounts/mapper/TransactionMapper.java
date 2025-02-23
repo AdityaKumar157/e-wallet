@@ -4,7 +4,7 @@ import com.makeprojects.ewallet.shared.exceptions.AccountNotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
-import com.makeprojects.ewallet.useraccounts.database.repository.AccountRepository;
+import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +15,10 @@ import java.util.NoSuchElementException;
 @Component
 public class TransactionMapper {
 
-    private final AccountRepository accountRepository;
+    private final WalletRepository accountRepository;
 
     @Autowired
-    public TransactionMapper(AccountRepository accountRepository) {
+    public TransactionMapper(WalletRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 

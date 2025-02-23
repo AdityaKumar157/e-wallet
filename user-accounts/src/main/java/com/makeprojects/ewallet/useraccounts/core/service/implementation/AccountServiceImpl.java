@@ -8,7 +8,7 @@ import com.makeprojects.ewallet.transactions.core.service.definition.Transaction
 import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
-import com.makeprojects.ewallet.useraccounts.database.repository.AccountRepository;
+import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,14 +26,14 @@ import java.util.UUID;
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    private final AccountRepository accountRepository;
+    private final WalletRepository accountRepository;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
+    public AccountServiceImpl(WalletRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
         this.accountRepository = accountRepository;
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
