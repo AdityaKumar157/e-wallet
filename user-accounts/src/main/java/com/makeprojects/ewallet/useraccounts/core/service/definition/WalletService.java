@@ -12,17 +12,17 @@ import java.util.UUID;
 
 public interface WalletService extends CRUDService<Wallet> {
 
-    Wallet addAccount(User user);
+    Wallet addWallet(User user);
 
-    Wallet getAccountByUserId(UUID userId);
+    Wallet getWalletByUserId(UUID userId);
 
-    Wallet getAccountByUser(User user);
+    Wallet getWalletByUser(User user);
 
-    List<Wallet> getAllAccountsByIds(List<UUID> accountIds);
+    List<Wallet> getAllWalletsByIds(List<UUID> walletIds);
 
-    void saveAccounts(Collection<Wallet> accountsCollection);
+    void saveWallets(Collection<Wallet> walletsCollection);
 
     Transaction sendMoney(TransactionDto transactionDto);
 
-    List<Transaction> getMiniStatementOfUserAccount(UUID accountId);
+    List<Transaction> getMiniStatementOfUserWallet(UUID walletId);
 }

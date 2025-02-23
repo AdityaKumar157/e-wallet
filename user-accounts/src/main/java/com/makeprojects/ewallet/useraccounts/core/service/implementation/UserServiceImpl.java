@@ -100,8 +100,8 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("Failed to create an user.");
             }
 
-            Wallet savedUserAccount = this.walletService.addAccount(createdUser);
-            log.info(String.format("Successfully saved user with userId %s, accountId %s.", createdUser.getUserId(), savedUserAccount.getAccountId()));
+            Wallet savedUserWallet = this.walletService.addWallet(createdUser);
+            log.info(String.format("Successfully saved user with userId %s, walletId %s.", createdUser.getUserId(), savedUserWallet.getAccountId()));
 
             return createdUser;
         } catch (Exception e) {

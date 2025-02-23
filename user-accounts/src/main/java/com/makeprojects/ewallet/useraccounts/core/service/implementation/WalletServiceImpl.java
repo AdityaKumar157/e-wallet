@@ -176,15 +176,15 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet addAccount(User user) {
+    public Wallet addWallet(User user) {
         try {
-            Wallet account = Wallet.builder()
+            Wallet wallet = Wallet.builder()
                     .user(user)
                     .build();
 
-            this.accountRepository.save(account);
-            log.info("Account with ID {} for user with ID {} is created successfully.", account.getAccountId(), user.getUserId());
-            return account;
+            this.accountRepository.save(wallet);
+            log.info("Wallet with ID {} for user with ID {} is created successfully.", wallet.getAccountId(), user.getUserId());
+            return wallet;
         } catch (Exception e) {
             String error = String.format("Exception while creating account for user with ID %s. Exception: %s", user.getUserId(), e);
             log.error(error);
@@ -193,48 +193,48 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Wallet getAccountByUserId(UUID userId) {
+    public Wallet getWalletByUserId(UUID userId) {
         try {
-            Optional<Wallet> optionalAccount = this.accountRepository.findByUserId(userId);
-            if(optionalAccount.isEmpty()) {
+            Optional<Wallet> optionalWallet = this.accountRepository.findByUserId(userId);
+            if(optionalWallet.isEmpty()) {
                 NotFoundException ex = new NotFoundException(Wallet.class, "userId", userId);
                 log.error(ex.getMessage());
                 throw ex;
             }
 
-            Wallet account = optionalAccount.get();
-            log.info("Successfully fetched account with userId {}.", account.getUser().getUserId());
-            return account;
+            Wallet wallet = optionalWallet.get();
+            log.info("Successfully fetched wallet with userId {}.", wallet.getUser().getUserId());
+            return wallet;
         } catch (Exception e) {
-            String error = String.format("Exception while fetching account with userID %s. Exception: %s", userId, e);
+            String error = String.format("Exception while fetching wallet with userID %s. Exception: %s", userId, e);
             log.error(error);
             throw e;
         }
     }
 
     @Override
-    public Wallet getAccountByUser(User user) {
+    public Wallet getWalletByUser(User user) {
         try {
-            return this.getAccountByUserId(user.getUserId());
+            return this.getWalletByUserId(user.getUserId());
         } catch (Exception e) {
-            String error = String.format("Exception while fetching account with userID %s. Exception: %s", user.getUserId(), e);
+            String error = String.format("Exception while fetching wallet with userID %s. Exception: %s", user.getUserId(), e);
             log.error(error);
             throw e;
         }
     }
 
     @Override
-    public List<Wallet> getAllAccountsByIds(List<UUID> accountIds) {
-        return this.accountRepository.findAllById(accountIds);
+    public List<Wallet> getAllWalletsByIds(List<UUID> walletIds) {
+        return this.accountRepository.findAllById(walletIds);
     }
 
     @Override
-    public void saveAccounts(Collection<Wallet> accountsCollection) {
+    public void saveWallets(Collection<Wallet> walletsCollection) {
         try {
-            this.accountRepository.saveAll(accountsCollection);
-            log.info("Saved all {} accounts.", accountsCollection.size());
+            this.accountRepository.saveAll(walletsCollection);
+            log.info("Saved all {} wallets.", walletsCollection.size());
         } catch (Exception e) {
-            String error = String.format("Exception while saving one of the %s accounts. Exception: %s", accountsCollection.size(), e);
+            String error = String.format("Exception while saving one of the %s wallets. Exception: %s", walletsCollection.size(), e);
             log.error(error);
             throw e;
         }
@@ -253,8 +253,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<Transaction> getMiniStatementOfUserAccount(UUID accountId) {
-        return this.transactionService.getMiniStatement(accountId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+    public List<Transaction> getMiniStatementOfUserWallet(UUID walletId) {
+        return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
     }
     //</editor-fold>
 }

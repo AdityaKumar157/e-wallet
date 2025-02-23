@@ -34,7 +34,7 @@ public class TransactionController {
         if(!((WalletServiceImpl) this.walletService).isLoggedInUserAccount(walletId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is invalid");
         }
-        List<Transaction> miniStatement = this.walletService.getMiniStatementOfUserAccount(walletId);
+        List<Transaction> miniStatement = this.walletService.getMiniStatementOfUserWallet(walletId);
         return ResponseEntity.ok(miniStatement);
     }
 }

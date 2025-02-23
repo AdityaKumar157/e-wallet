@@ -27,7 +27,7 @@ public class AccountController {
     @GetMapping("/get-info")
     public ResponseEntity<Wallet> getAccountInfoByUserId(@RequestParam UUID userId) {
         try {
-            Wallet wallet = this.walletService.getAccountByUserId(userId);
+            Wallet wallet = this.walletService.getWalletByUserId(userId);
             return ResponseEntity.ok(wallet);
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
