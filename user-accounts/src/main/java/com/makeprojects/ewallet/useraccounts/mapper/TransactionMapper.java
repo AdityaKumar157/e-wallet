@@ -15,15 +15,15 @@ import java.util.NoSuchElementException;
 @Component
 public class TransactionMapper {
 
-    private final WalletRepository accountRepository;
+    private final WalletRepository walletRepository;
 
     @Autowired
-    public TransactionMapper(WalletRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public TransactionMapper(WalletRepository walletRepository) {
+        this.walletRepository = walletRepository;
     }
 
     public Transaction mapToTransaction(TransactionDto transactionDto) {
-        List<Wallet> accounts = this.accountRepository.findAllById(List.of(transactionDto.getSenderAccId(), transactionDto.getReceiverAccId()));
+        List<Wallet> accounts = this.walletRepository.findAllById(List.of(transactionDto.getSenderAccId(), transactionDto.getReceiverAccId()));
         Wallet senderAccount = null;
         Wallet receiverAccount = null;
 

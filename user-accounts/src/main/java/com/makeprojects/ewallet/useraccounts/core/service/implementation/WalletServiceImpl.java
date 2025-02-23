@@ -26,15 +26,15 @@ import java.util.UUID;
 @Service
 public class WalletServiceImpl implements WalletService {
 
-    private final WalletRepository accountRepository;
+    private final WalletRepository walletRepository;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public WalletServiceImpl(WalletRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
-        this.accountRepository = accountRepository;
+    public WalletServiceImpl(WalletRepository walletRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
+        this.walletRepository = walletRepository;
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
     }
@@ -58,7 +58,7 @@ public class WalletServiceImpl implements WalletService {
                 throw new NullPointerException(errorMsg);
             }
 
-            Optional<Wallet> optionalAccount = this.accountRepository.findById(id);
+            Optional<Wallet> optionalAccount = this.walletRepository.findById(id);
             if (optionalAccount.isEmpty()) {
                 errorMsg = String.format("Account with UUID %s is not found.", id);
                 log.error(errorMsg);
@@ -77,7 +77,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<Wallet> getAll() {
         try {
-            List<Wallet> accountList = this.accountRepository.findAll();
+            List<Wallet> accountList = this.walletRepository.findAll();
             if (accountList.isEmpty()) {
                 log.error("No account found.");
             }
@@ -105,7 +105,7 @@ public class WalletServiceImpl implements WalletService {
                 throw new RuntimeException(errorMsg);
             }
 
-            Wallet createdAccount = this.accountRepository.save(entity);
+            Wallet createdAccount = this.walletRepository.save(entity);
             if (createdAccount == null) {
                 log.error("Failed to create an account.");
                 throw new RuntimeException("Failed to create an Account.");
@@ -135,7 +135,7 @@ public class WalletServiceImpl implements WalletService {
                 throw new NotFoundException(Wallet.class, "UUID", entity.getAccountId());
             }
 
-            Wallet updatedAccount = this.accountRepository.save(entity);
+            Wallet updatedAccount = this.walletRepository.save(entity);
             if (updatedAccount == null) {
                 errorMsg = String.format("Failed to updated an Account with UUID '%s'.", entity.getAccountId());
                 log.error(errorMsg);
@@ -166,7 +166,7 @@ public class WalletServiceImpl implements WalletService {
                 throw new NotFoundException(Wallet.class, "UUID", id);
             }
 
-            this.accountRepository.deleteById(id);
+            this.walletRepository.deleteById(id);
             log.info(String.format("Successfully deleted an account with UUID '%s'.", id));
         } catch (Exception e) {
             errorMsg = String.format("Exception occurred while deleting an account with UUID '%s'. Exception: %s", id, e);
@@ -182,7 +182,7 @@ public class WalletServiceImpl implements WalletService {
                     .user(user)
                     .build();
 
-            this.accountRepository.save(wallet);
+            this.walletRepository.save(wallet);
             log.info("Wallet with ID {} for user with ID {} is created successfully.", wallet.getAccountId(), user.getUserId());
             return wallet;
         } catch (Exception e) {
@@ -195,7 +195,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public Wallet getWalletByUserId(UUID userId) {
         try {
-            Optional<Wallet> optionalWallet = this.accountRepository.findByUserId(userId);
+            Optional<Wallet> optionalWallet = this.walletRepository.findByUserId(userId);
             if(optionalWallet.isEmpty()) {
                 NotFoundException ex = new NotFoundException(Wallet.class, "userId", userId);
                 log.error(ex.getMessage());
@@ -225,13 +225,13 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public List<Wallet> getAllWalletsByIds(List<UUID> walletIds) {
-        return this.accountRepository.findAllById(walletIds);
+        return this.walletRepository.findAllById(walletIds);
     }
 
     @Override
     public void saveWallets(Collection<Wallet> walletsCollection) {
         try {
-            this.accountRepository.saveAll(walletsCollection);
+            this.walletRepository.saveAll(walletsCollection);
             log.info("Saved all {} wallets.", walletsCollection.size());
         } catch (Exception e) {
             String error = String.format("Exception while saving one of the %s wallets. Exception: %s", walletsCollection.size(), e);
@@ -248,7 +248,7 @@ public class WalletServiceImpl implements WalletService {
         Wallet receiverAccount = transaction.getReceiverAccount();
         Transaction createdTransaction = this.transactionService.create(transaction);
         senderAccount.send(receiverAccount, transaction.getAmount());
-        this.accountRepository.saveAll(List.of(senderAccount, receiverAccount));
+        this.walletRepository.saveAll(List.of(senderAccount, receiverAccount));
         return createdTransaction;
     }
 
