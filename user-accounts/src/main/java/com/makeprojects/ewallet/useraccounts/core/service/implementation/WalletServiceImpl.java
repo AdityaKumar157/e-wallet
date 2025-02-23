@@ -5,7 +5,7 @@ import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
-import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
+import com.makeprojects.ewallet.useraccounts.core.service.definition.WalletService;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
@@ -24,17 +24,17 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public class AccountServiceImpl implements AccountService {
+public class WalletServiceImpl implements WalletService {
 
-    private final WalletRepository accountRepository;
+    private final WalletRepository walletRepository;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public AccountServiceImpl(WalletRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
-        this.accountRepository = accountRepository;
+    public WalletServiceImpl(WalletRepository walletRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
+        this.walletRepository = walletRepository;
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
     }
@@ -58,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new NullPointerException(errorMsg);
             }
 
-            Optional<Wallet> optionalAccount = this.accountRepository.findById(id);
+            Optional<Wallet> optionalAccount = this.walletRepository.findById(id);
             if (optionalAccount.isEmpty()) {
                 errorMsg = String.format("Account with UUID %s is not found.", id);
                 log.error(errorMsg);
@@ -77,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Wallet> getAll() {
         try {
-            List<Wallet> accountList = this.accountRepository.findAll();
+            List<Wallet> accountList = this.walletRepository.findAll();
             if (accountList.isEmpty()) {
                 log.error("No account found.");
             }
@@ -105,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new RuntimeException(errorMsg);
             }
 
-            Wallet createdAccount = this.accountRepository.save(entity);
+            Wallet createdAccount = this.walletRepository.save(entity);
             if (createdAccount == null) {
                 log.error("Failed to create an account.");
                 throw new RuntimeException("Failed to create an Account.");
@@ -135,7 +135,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new NotFoundException(Wallet.class, "UUID", entity.getAccountId());
             }
 
-            Wallet updatedAccount = this.accountRepository.save(entity);
+            Wallet updatedAccount = this.walletRepository.save(entity);
             if (updatedAccount == null) {
                 errorMsg = String.format("Failed to updated an Account with UUID '%s'.", entity.getAccountId());
                 log.error(errorMsg);
@@ -166,7 +166,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new NotFoundException(Wallet.class, "UUID", id);
             }
 
-            this.accountRepository.deleteById(id);
+            this.walletRepository.deleteById(id);
             log.info(String.format("Successfully deleted an account with UUID '%s'.", id));
         } catch (Exception e) {
             errorMsg = String.format("Exception occurred while deleting an account with UUID '%s'. Exception: %s", id, e);
@@ -176,15 +176,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Wallet addAccount(User user) {
+    public Wallet addWallet(User user) {
         try {
-            Wallet account = Wallet.builder()
+            Wallet wallet = Wallet.builder()
                     .user(user)
                     .build();
 
-            this.accountRepository.save(account);
-            log.info("Account with ID {} for user with ID {} is created successfully.", account.getAccountId(), user.getUserId());
-            return account;
+            this.walletRepository.save(wallet);
+            log.info("Wallet with ID {} for user with ID {} is created successfully.", wallet.getAccountId(), user.getUserId());
+            return wallet;
         } catch (Exception e) {
             String error = String.format("Exception while creating account for user with ID %s. Exception: %s", user.getUserId(), e);
             log.error(error);
@@ -193,48 +193,48 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Wallet getAccountByUserId(UUID userId) {
+    public Wallet getWalletByUserId(UUID userId) {
         try {
-            Optional<Wallet> optionalAccount = this.accountRepository.findByUserId(userId);
-            if(optionalAccount.isEmpty()) {
+            Optional<Wallet> optionalWallet = this.walletRepository.findByUserId(userId);
+            if(optionalWallet.isEmpty()) {
                 NotFoundException ex = new NotFoundException(Wallet.class, "userId", userId);
                 log.error(ex.getMessage());
                 throw ex;
             }
 
-            Wallet account = optionalAccount.get();
-            log.info("Successfully fetched account with userId {}.", account.getUser().getUserId());
-            return account;
+            Wallet wallet = optionalWallet.get();
+            log.info("Successfully fetched wallet with userId {}.", wallet.getUser().getUserId());
+            return wallet;
         } catch (Exception e) {
-            String error = String.format("Exception while fetching account with userID %s. Exception: %s", userId, e);
+            String error = String.format("Exception while fetching wallet with userID %s. Exception: %s", userId, e);
             log.error(error);
             throw e;
         }
     }
 
     @Override
-    public Wallet getAccountByUser(User user) {
+    public Wallet getWalletByUser(User user) {
         try {
-            return this.getAccountByUserId(user.getUserId());
+            return this.getWalletByUserId(user.getUserId());
         } catch (Exception e) {
-            String error = String.format("Exception while fetching account with userID %s. Exception: %s", user.getUserId(), e);
+            String error = String.format("Exception while fetching wallet with userID %s. Exception: %s", user.getUserId(), e);
             log.error(error);
             throw e;
         }
     }
 
     @Override
-    public List<Wallet> getAllAccountsByIds(List<UUID> accountIds) {
-        return this.accountRepository.findAllById(accountIds);
+    public List<Wallet> getAllWalletsByIds(List<UUID> walletIds) {
+        return this.walletRepository.findAllById(walletIds);
     }
 
     @Override
-    public void saveAccounts(Collection<Wallet> accountsCollection) {
+    public void saveWallets(Collection<Wallet> walletsCollection) {
         try {
-            this.accountRepository.saveAll(accountsCollection);
-            log.info("Saved all {} accounts.", accountsCollection.size());
+            this.walletRepository.saveAll(walletsCollection);
+            log.info("Saved all {} wallets.", walletsCollection.size());
         } catch (Exception e) {
-            String error = String.format("Exception while saving one of the %s accounts. Exception: %s", accountsCollection.size(), e);
+            String error = String.format("Exception while saving one of the %s wallets. Exception: %s", walletsCollection.size(), e);
             log.error(error);
             throw e;
         }
@@ -248,13 +248,13 @@ public class AccountServiceImpl implements AccountService {
         Wallet receiverAccount = transaction.getReceiverAccount();
         Transaction createdTransaction = this.transactionService.create(transaction);
         senderAccount.send(receiverAccount, transaction.getAmount());
-        this.accountRepository.saveAll(List.of(senderAccount, receiverAccount));
+        this.walletRepository.saveAll(List.of(senderAccount, receiverAccount));
         return createdTransaction;
     }
 
     @Override
-    public List<Transaction> getMiniStatementOfUserAccount(UUID accountId) {
-        return this.transactionService.getMiniStatement(accountId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+    public List<Transaction> getMiniStatementOfUserWallet(UUID walletId) {
+        return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
     }
     //</editor-fold>
 }

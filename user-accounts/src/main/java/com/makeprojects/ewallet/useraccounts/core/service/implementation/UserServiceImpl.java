@@ -3,7 +3,7 @@ package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
-import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
+import com.makeprojects.ewallet.useraccounts.core.service.definition.WalletService;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.UserService;
 import com.makeprojects.ewallet.useraccounts.database.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +21,15 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final AccountService accountService;
+    private final WalletService walletService;
     private final PasswordEncoder passwordEncoder;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, AccountService accountService, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, WalletService walletService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.accountService = accountService;
+        this.walletService = walletService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -100,8 +100,8 @@ public class UserServiceImpl implements UserService {
                 throw new RuntimeException("Failed to create an user.");
             }
 
-            Wallet savedUserAccount = this.accountService.addAccount(createdUser);
-            log.info(String.format("Successfully saved user with userId %s, accountId %s.", createdUser.getUserId(), savedUserAccount.getAccountId()));
+            Wallet savedUserWallet = this.walletService.addWallet(createdUser);
+            log.info(String.format("Successfully saved user with userId %s, walletId %s.", createdUser.getUserId(), savedUserWallet.getAccountId()));
 
             return createdUser;
         } catch (Exception e) {
