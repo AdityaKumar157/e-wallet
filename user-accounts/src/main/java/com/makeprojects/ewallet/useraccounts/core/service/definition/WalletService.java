@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public interface AccountService extends CRUDService<Wallet> {
+public interface WalletService extends CRUDService<Wallet> {
 
     Wallet addAccount(User user);
 

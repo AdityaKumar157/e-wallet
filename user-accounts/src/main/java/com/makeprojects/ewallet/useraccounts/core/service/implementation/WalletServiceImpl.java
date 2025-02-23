@@ -5,7 +5,7 @@ import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
-import com.makeprojects.ewallet.useraccounts.core.service.definition.AccountService;
+import com.makeprojects.ewallet.useraccounts.core.service.definition.WalletService;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public class AccountServiceImpl implements AccountService {
+public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository accountRepository;
     private final TransactionService transactionService;
@@ -33,7 +33,7 @@ public class AccountServiceImpl implements AccountService {
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public AccountServiceImpl(WalletRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
+    public WalletServiceImpl(WalletRepository accountRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
         this.accountRepository = accountRepository;
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
