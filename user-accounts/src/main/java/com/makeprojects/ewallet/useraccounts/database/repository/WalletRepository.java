@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Wallet, UUID> {
+public interface WalletRepository extends JpaRepository<Wallet, UUID> {
 
-    @Query("select a from Account a where a.user.userId = ?1")
+    @Query("select a from Wallet a where a.user.userId = ?1")
     Optional<Wallet> findByUserId(UUID userId);
 }

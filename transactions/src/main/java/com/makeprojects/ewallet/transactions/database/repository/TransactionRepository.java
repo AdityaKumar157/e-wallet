@@ -15,6 +15,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     @Query("""
             select t from Transaction t
-            where t.senderAccount.accountId = ?1 or t.receiverAccount.accountId = ?1 and t.createdAt between ?2 and ?3""")
+            where t.senderAccount.walletId = ?1 or t.receiverAccount.walletId = ?1 and t.createdAt between ?2 and ?3""")
     List<Transaction> getTransactionsForAccountInDateRange(UUID accountId, Instant createdAtStart, Instant createdAtEnd, Sort sort);
 }
