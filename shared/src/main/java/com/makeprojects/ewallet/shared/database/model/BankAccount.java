@@ -1,5 +1,6 @@
 package com.makeprojects.ewallet.shared.database.model;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.makeprojects.ewallet.shared.core.definition.DelegatedTransactionAccount;
 import com.makeprojects.ewallet.shared.core.enums.AccountEnums.Banks;
 import com.makeprojects.ewallet.shared.core.enums.AccountEnums.AccountStatus;
@@ -24,6 +25,7 @@ public class BankAccount implements DelegatedTransactionAccount {
 
     @ManyToOne
     @JoinColumn(name = "walletId", nullable = false)
+    @JsonIncludeProperties({"walletId"})
     private Wallet wallet;
 
     private String accountHolderName; // Name of the account owner

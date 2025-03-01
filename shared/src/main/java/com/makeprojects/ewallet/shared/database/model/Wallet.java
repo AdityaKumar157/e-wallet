@@ -40,13 +40,16 @@ public class Wallet implements AutonomousTransactionAccount {
     private boolean kycComplete = false;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus accountStatus;
+    @Builder.Default
+    private AccountStatus accountStatus = AccountStatus.PENDING_KYC;
 
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIncludeProperties({"bankAccountId"})
     private List<BankAccount> linkedBankAccounts;
 
     @ManyToOne
     @JoinColumn(name = "default_bank_account_id", nullable = true)
+    @JsonIncludeProperties({"bankAccountId"})
     private BankAccount defaultBankAccount;
 
     public void send(Wallet receiverAccount, double amount) {
@@ -95,7 +98,16 @@ public class Wallet implements AutonomousTransactionAccount {
         }
 
         bankAccount.setWallet(this);
+
+        boolean markAsDefault = false;
+        if(defaultBankAccount == null && linkedBankAccounts.isEmpty()) {
+            markAsDefault = true;
+        }
+
         this.linkedBankAccounts.add(bankAccount);
+        if(markAsDefault) {
+            this.defaultBankAccount = linkedBankAccounts.get(0);
+        }
         return true;
     }
 

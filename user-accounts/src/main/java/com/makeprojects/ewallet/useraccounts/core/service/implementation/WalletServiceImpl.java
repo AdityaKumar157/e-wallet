@@ -1,6 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
 import com.makeprojects.ewallet.shared.core.definition.DelegatedTransactionAccount;
+import com.makeprojects.ewallet.shared.core.enums.AccountEnums;
 import com.makeprojects.ewallet.shared.database.model.BankAccount;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
@@ -368,6 +369,24 @@ public class WalletServiceImpl implements WalletService {
         } catch (Exception e) {
             errorMsg = String.format("Exception occurred while linking a new bankAccount with wallet UUID '%s'. Exception: %s", walletId, e);
             log.error(errorMsg);
+            throw e;
+        }
+    }
+
+    /**
+     * Completes KYC of wallet
+     * @param wallet Wallet obj
+     * @return updated Wallet
+     */
+    @Override
+    public Wallet completeKyc(Wallet wallet) {
+        try {
+            wallet.setKycComplete(true);
+            wallet.setAccountStatus(AccountEnums.AccountStatus.ACTIVE);
+
+            return this.update(wallet);
+        } catch (RuntimeException e) {
+            log.error(String.format("Exception while completing KYC of Walled with UUID '%s'. Exception: %s", wallet.getAccountId(), e));
             throw e;
         }
     }
