@@ -57,4 +57,11 @@ public interface WalletService extends CRUDService<Wallet> {
      * @return linked BankAccount
      */
     BankAccount linkBankAccountInWallet(DTAccountRequestDTO bankAccountRequestDTO, UUID walletId);
+
+    /**
+     * Completes KYC of wallet
+     * @param wallet Wallet obj
+     * @return updated Wallet
+     */
+    Wallet completeKyc(Wallet wallet);
 }
