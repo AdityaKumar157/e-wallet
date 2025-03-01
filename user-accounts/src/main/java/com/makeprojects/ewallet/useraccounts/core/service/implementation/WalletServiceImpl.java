@@ -1,11 +1,16 @@
 package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
+import com.makeprojects.ewallet.shared.core.definition.DelegatedTransactionAccount;
+import com.makeprojects.ewallet.shared.database.model.BankAccount;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
+import com.makeprojects.ewallet.useraccounts.core.service.definition.BankAccountService;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.WalletService;
+import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountRequestDTO;
+import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountResponseDTO;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
@@ -17,10 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,14 +31,17 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final TransactionService transactionService;
+    private final BankAccountService bankAccountService;
     private final TransactionMapper transactionMapper;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, TransactionService transactionService, TransactionMapper transactionMapper) {
+    public WalletServiceImpl(WalletRepository walletRepository, TransactionService transactionService, BankAccountService bankAccountService,
+                             TransactionMapper transactionMapper) {
         this.walletRepository = walletRepository;
         this.transactionService = transactionService;
+        this.bankAccountService = bankAccountService;
         this.transactionMapper = transactionMapper;
     }
 
@@ -53,22 +59,22 @@ public class WalletServiceImpl implements WalletService {
         String errorMsg = EMPTY_STRING;
         try {
             if (id == null) {
-                errorMsg = String.format("UUID of account cannot be null.");
+                errorMsg = String.format("UUID of wallet cannot be null.");
                 log.error(errorMsg);
                 throw new NullPointerException(errorMsg);
             }
 
-            Optional<Wallet> optionalAccount = this.walletRepository.findById(id);
-            if (optionalAccount.isEmpty()) {
-                errorMsg = String.format("Account with UUID %s is not found.", id);
+            Optional<Wallet> optionalWallet = this.walletRepository.findById(id);
+            if (optionalWallet.isEmpty()) {
+                errorMsg = String.format("Wallet with UUID %s is not found.", id);
                 log.error(errorMsg);
                 throw new NotFoundException(Wallet.class, "UUID", id);
             }
 
-            log.info(String.format("Successfully retrieved account with UUID '%s'.", id));
-            return optionalAccount.get();
+            log.info(String.format("Successfully retrieved wallet with UUID '%s'.", id));
+            return optionalWallet.get();
         } catch (Exception e) {
-            errorMsg = String.format("Exception occurred while retrieving account with UUID '%s'. Exception: %s", id, e);
+            errorMsg = String.format("Exception occurred while retrieving wallet with UUID '%s'. Exception: %s", id, e);
             log.error(errorMsg);
             throw e;
         }
@@ -77,15 +83,15 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<Wallet> getAll() {
         try {
-            List<Wallet> accountList = this.walletRepository.findAll();
-            if (accountList.isEmpty()) {
-                log.error("No account found.");
+            List<Wallet> walletList = this.walletRepository.findAll();
+            if (walletList.isEmpty()) {
+                log.error("No wallet found.");
             }
 
-            log.info("Successfully retrieved accounts list.");
-            return accountList;
+            log.info("Successfully retrieved wallets list.");
+            return walletList;
         } catch (Exception e) {
-            log.error("Exception occurred while retrieving list of accounts.");
+            log.error("Exception occurred while retrieving list of wallets.");
             throw e;
         }
     }
@@ -95,26 +101,26 @@ public class WalletServiceImpl implements WalletService {
         String errorMsg = EMPTY_STRING;
         try {
             if (entity == null) {
-                log.error("Account entity cannot be null.");
-                throw new NullPointerException("Account entity cannot be null.");
+                log.error("Wallet entity cannot be null.");
+                throw new NullPointerException("Wallet entity cannot be null.");
             }
 
             if ((entity.getAccountId() != null) && (get(entity.getAccountId()) != null)) {
-                errorMsg = String.format("Account with UUID %s already exists.", entity.getAccountId());
+                errorMsg = String.format("Wallet with UUID %s already exists.", entity.getAccountId());
                 log.error(errorMsg);
                 throw new RuntimeException(errorMsg);
             }
 
-            Wallet createdAccount = this.walletRepository.save(entity);
-            if (createdAccount == null) {
-                log.error("Failed to create an account.");
-                throw new RuntimeException("Failed to create an Account.");
+            Wallet createdWallet = this.walletRepository.save(entity);
+            if (createdWallet == null) {
+                log.error("Failed to create a Wallet.");
+                throw new RuntimeException("Failed to create a Wallet.");
             }
 
-            log.info(String.format("Successfully created an account with UUID '%s'.", createdAccount.getAccountId()));
-            return createdAccount;
+            log.info(String.format("Successfully created a Wallet with UUID '%s'.", createdWallet.getAccountId()));
+            return createdWallet;
         } catch (Exception e) {
-            errorMsg = String.format("Exception occurred while creating an account. Exception: %s", e);
+            errorMsg = String.format("Exception occurred while creating a Wallet. Exception: %s", e);
             log.error(errorMsg);
             throw e;
         }
@@ -125,27 +131,27 @@ public class WalletServiceImpl implements WalletService {
         String errorMsg = EMPTY_STRING;
         try {
             if (entity == null) {
-                log.error("Account entity which needs to be updated cannot be null.");
-                throw new NullPointerException("Account entity cannot be null.");
+                log.error("Wallet entity which needs to be updated cannot be null.");
+                throw new NullPointerException("Wallet entity cannot be null.");
             }
 
             if (get(entity.getAccountId()) == null) {
-                errorMsg = String.format("Account with UUID %s doesn't exist in database.", entity.getAccountId());
+                errorMsg = String.format("Wallet with UUID %s doesn't exist in database.", entity.getAccountId());
                 log.error(errorMsg);
                 throw new NotFoundException(Wallet.class, "UUID", entity.getAccountId());
             }
 
-            Wallet updatedAccount = this.walletRepository.save(entity);
-            if (updatedAccount == null) {
-                errorMsg = String.format("Failed to updated an Account with UUID '%s'.", entity.getAccountId());
+            Wallet updatedWallet = this.walletRepository.save(entity);
+            if (updatedWallet == null) {
+                errorMsg = String.format("Failed to updated a Wallet with UUID '%s'.", entity.getAccountId());
                 log.error(errorMsg);
                 throw new RuntimeException(errorMsg);
             }
 
-            log.info(String.format("Successfully updated an account with UUID '%s'.", updatedAccount.getAccountId()));
-            return updatedAccount;
+            log.info(String.format("Successfully updated a Wallet with UUID '%s'.", updatedWallet.getAccountId()));
+            return updatedWallet;
         } catch (Exception e) {
-            errorMsg = String.format("Exception occurred while creating an account. Exception: %s", e);
+            errorMsg = String.format("Exception occurred while creating a Wallet. Exception: %s", e);
             log.error(errorMsg);
             throw e;
         }
@@ -255,6 +261,115 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<Transaction> getMiniStatementOfUserWallet(UUID walletId) {
         return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+    }
+
+    /**
+     * Gets all linked bankAccounts
+     * @param walletId UUID of wallet
+     * @return List of BankAccount
+     */
+    @Override
+    public List<DTAccountResponseDTO> getLinkedBankAccountsInWallet(UUID walletId) {
+        try {
+            Wallet wallet = this.get(walletId);
+
+            List<BankAccount> linkedBankAccountList = wallet.getLinkedBankAccounts();
+            if (linkedBankAccountList.isEmpty()) {
+                log.error("No linked BankAccount found.");
+            }
+
+            List<DTAccountResponseDTO> bankAccountDTOs = linkedBankAccountList.stream()
+                                                                .map(acc ->
+                                                                    DTAccountResponseDTO.builder()
+                                                                                .bankAccountId(acc.getAccountId())
+                                                                                .accountNumber(acc.getAccountNumber())
+                                                                                .bankName(acc.getBankName())
+                                                                                .build()
+                                                                ).collect(Collectors.toList());
+
+            log.info("Successfully retrieved linked BankAccount list.");
+            return bankAccountDTOs;
+        } catch (Exception e) {
+            log.error("Exception occurred while retrieving list of linked BankAccount.");
+            throw e;
+        }
+    }
+
+    /**
+     * Gets default BankAccount linked in Wallet\
+     * @param walletId UUID of walled
+     * @return Default BankAccount
+     */
+    @Override
+    public DTAccountResponseDTO getDefaultBankAccountInWallet(UUID walletId) {
+        try {
+            Wallet wallet = this.get(walletId);
+            BankAccount bankAccount = wallet.getDefaultBankAccount();
+
+            log.info("Successfully fetched default bankAccount from wallet with UUID {}.", wallet.getAccountId());
+
+            return DTAccountResponseDTO.builder()
+                    .bankAccountId(bankAccount.getAccountId())
+                    .accountNumber(bankAccount.getAccountNumber())
+                    .bankName(bankAccount.getBankName())
+                    .build();
+        } catch (Exception e) {
+            String error = String.format("Exception while default bankAccount from wallet with UUID '%s'. Exception: %s", walletId, e);
+            log.error(error);
+            throw e;
+        }
+    }
+
+    /**
+     * Unlinks a BankAccount from the wallet
+     * @param accountId UUID of BankAccount
+     * @return true is BankAccount is unlinked successfully from Wallet, false otherwise
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean unlinkBankAccountFromWallet(UUID accountId) {
+        String errorMsg = EMPTY_STRING;
+        try {
+            BankAccount bankAccount = this.bankAccountService.get(accountId);
+            Wallet parentWallet = bankAccount.getWallet();
+
+            if (parentWallet == null) {
+                log.error(String.format("BankAccount with UUID '%s' is not linked to any wallet.", accountId));
+                throw new RuntimeException(String.format("BankAccount with UUID '%s' is not linked to any wallet.", accountId));
+            }
+
+            parentWallet.unlinkBankAccount(bankAccount);
+            this.update(parentWallet);
+            log.info(String.format("Successfully unlinked BankAccount with UUID '%s' from wallet with UUID '%s'.", accountId, parentWallet.getAccountId()));
+            return true;
+        } catch (Exception e) {
+            errorMsg = String.format("Exception occurred while unlinking a bankAccount with UUID '%s'. Exception: %s", accountId, e);
+            log.error(errorMsg);
+            throw e;
+        }
+    }
+
+    /**
+     * Unlinks a BankAccount to the wallet
+     * @param bankAccountRequestDTO BankAccount DTO which will be used to create BankAccount link to a wallet
+     * @param walletId UUID of wallet to which BankAccount needs to be linked
+     * @return linked BankAccount
+     */
+    @Override
+    public BankAccount linkBankAccountInWallet(DTAccountRequestDTO bankAccountRequestDTO, UUID walletId) {
+        String errorMsg = EMPTY_STRING;
+        try {
+            DelegatedTransactionAccount DTAccount = this.bankAccountService.addDTAccount(bankAccountRequestDTO, walletId);
+            if(DTAccount instanceof BankAccount bankAccount) {
+                return bankAccount;
+            }
+
+            throw new RuntimeException("Could not add/link BankAccount to Wallet.");
+        } catch (Exception e) {
+            errorMsg = String.format("Exception occurred while linking a new bankAccount with wallet UUID '%s'. Exception: %s", walletId, e);
+            log.error(errorMsg);
+            throw e;
+        }
     }
     //</editor-fold>
 }

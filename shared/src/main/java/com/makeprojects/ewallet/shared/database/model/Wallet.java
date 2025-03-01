@@ -42,7 +42,7 @@ public class Wallet implements AutonomousTransactionAccount {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<BankAccount> linkedBankAccounts;
 
     @ManyToOne
@@ -82,6 +82,21 @@ public class Wallet implements AutonomousTransactionAccount {
             return false; // Prevent unlinking the default account
         }
         return linkedBankAccounts.remove(bankAccount);
+    }
+
+    /**
+     * Links a bank account to the wallet
+     * @param bankAccount BankAccount obj to link
+     * @return true if linking is successful, otherwise false
+     */
+    public boolean linkBankAccount(BankAccount bankAccount) {
+        if(this.linkedBankAccounts.contains(bankAccount)) {
+            return false; // BankAccount is already linked
+        }
+
+        bankAccount.setWallet(this);
+        this.linkedBankAccounts.add(bankAccount);
+        return true;
     }
 
     /**
