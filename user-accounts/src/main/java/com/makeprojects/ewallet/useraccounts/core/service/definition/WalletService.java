@@ -1,6 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.core.service.definition;
 
 import com.makeprojects.ewallet.shared.core.definition.CRUDService;
+import com.makeprojects.ewallet.shared.core.enums.transaction.TransactionEnums.TransactionType;
 import com.makeprojects.ewallet.shared.database.model.BankAccount;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
@@ -64,4 +65,14 @@ public interface WalletService extends CRUDService<Wallet> {
      * @return updated Wallet
      */
     Wallet completeKyc(Wallet wallet);
+
+    /**
+     * Transfers money between two different monetary accounts
+     * @param accountId UUID of the account initiating the transaction
+     * @param targetAccountId UUID of the recipient account
+     * @param amount value of amount to be transferred
+     * @param transactionType type of transaction, e.g. WALLET_TO_WALLET, WALLET_TO_BANK, BANK_TO_WALLET
+     * @return true if transfer of money is successful, false otherwise
+     */
+    boolean transferMoney(UUID accountId, UUID targetAccountId, double amount, TransactionType transactionType);
 }
