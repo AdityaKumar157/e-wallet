@@ -25,6 +25,9 @@ public class Wallet implements AutonomousTransactionAccount {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID walletId;
 
+    @Version    // Optimistic Locking
+    private int version;
+
     @JsonIgnore
     @OneToOne
     @JsonIncludeProperties({"userId", "name"})
@@ -178,8 +181,13 @@ public class Wallet implements AutonomousTransactionAccount {
     @Override
     public boolean transfer(AutonomousTransactionAccount targetAccount, double amount, boolean receive) {
         try {
-            if(targetAccount instanceof Wallet wallet) {
-                send(wallet, amount);
+            if(targetAccount instanceof Wallet targetWallet) {
+                //send(wallet, amount);
+                if(receive) {
+                    deposit(amount, targetWallet);
+                } else {
+                    withdraw(amount, targetWallet);
+                }
             }
         } catch (Exception e) {
             return false;

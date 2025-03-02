@@ -2,6 +2,7 @@ package com.makeprojects.ewallet.useraccounts.core.service.implementation;
 
 import com.makeprojects.ewallet.shared.core.definition.DelegatedTransactionAccount;
 import com.makeprojects.ewallet.shared.core.enums.AccountEnums;
+import com.makeprojects.ewallet.shared.core.enums.transaction.TransactionEnums.TransactionType;
 import com.makeprojects.ewallet.shared.database.model.BankAccount;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
@@ -15,6 +16,7 @@ import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountResponseDTO;
 import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
 import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
+import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +56,7 @@ public class WalletServiceImpl implements WalletService {
         return tokenUsername.equals(requestUsername);
     }
 
-    //<editor-fold desc="AccountService Implementation">
+    //<editor-fold desc="WalletService Implementation">
     @Override
     public Wallet get(UUID id) {
         String errorMsg = EMPTY_STRING;
@@ -389,6 +391,117 @@ public class WalletServiceImpl implements WalletService {
             log.error(String.format("Exception while completing KYC of Walled with UUID '%s'. Exception: %s", wallet.getAccountId(), e));
             throw e;
         }
+    }
+
+    /**
+     * Transfers money between two different monetary accounts
+     * @param accountId UUID of the account initiating the transaction
+     * @param targetAccountId UUID of the recipient account
+     * @param amount value of amount to be transferred
+     * @param transactionType type of transaction, e.g. WALLET_TO_WALLET, WALLET_TO_BANK, BANK_TO_WALLET
+     * @return true if transfer of money is successful, false otherwise
+     */
+    @Override
+    public boolean transferMoney(UUID accountId, UUID targetAccountId, double amount, TransactionType transactionType) {
+        try {
+            if (accountId == null || targetAccountId == null) {
+                log.error(String.format("Either accountID '%s' or targetAccount ID '%s' is null.", accountId, targetAccountId));
+                return false;
+            }
+
+            if (amount <= 0.0) {
+                log.error(String.format("Amount '%s' is 0 or less than 0.", amount));
+                return false;
+            }
+
+            boolean isSuccess = transferMoneyCore(accountId, targetAccountId, amount, transactionType);
+
+            log.info(String.format("Successfully transferred money %s from account '%s' to account '%s'.", amount, accountId, targetAccountId));
+            return isSuccess;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Private methods">
+    private boolean transferMoneyCore(UUID accountId, UUID targetAccountId, double amount, TransactionType transactionType) {
+        boolean isSuccess = false;
+
+        for (int i=0; i<3; i++) {       // re-try 3 times
+            try {
+                switch (transactionType) {
+                    case WALLET_TO_WALLET:
+                        isSuccess = handleWalletToWalletTransaction(accountId, targetAccountId, amount);
+                        break;
+
+                    case BANK_TO_WALLET:
+                        isSuccess = handleBankToWalletTransaction(accountId, targetAccountId, amount);
+                        break;
+
+                    case WALLET_TO_BANK:
+                        isSuccess = handleWalletToBankTransaction(accountId, targetAccountId, amount);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if(isSuccess) return true;
+            } catch (OptimisticLockException opLE) {
+                log.warn(String.format("Optimistic Locking failure for accountID '%s', targetAccountId '%s', retrying... Attempt: %s", accountId, targetAccountId, i+1));
+            }
+        }
+
+        log.error(String.format("Failed to transfer money from account UUID '%s' to account UUID '%s' after re-trying 3 times", accountId, targetAccountId));
+        return false;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    private boolean handleWalletToWalletTransaction(UUID walletId, UUID targetWalletId, double amount) throws OptimisticLockException {
+        boolean result = false;
+
+        Wallet wallet = this.get(walletId);
+        Wallet targetWallet = this.get(targetWalletId);
+
+        wallet.transfer(targetWallet, amount, false);
+        this.saveWallets(List.of(wallet, targetWallet));
+        result = true;
+
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    private boolean handleBankToWalletTransaction(UUID bankAccountId, UUID targetWalletId, double amount) throws OptimisticLockException {
+        boolean result = false;
+
+        BankAccount bankAccount = this.bankAccountService.get(bankAccountId);
+        Wallet targetWallet = this.get(targetWalletId);
+
+        // ToDo: write logic  to deduct amount from BankAccount
+
+        targetWallet.setBalance(targetWallet.getBalance() + amount);
+        this.update(targetWallet);
+        result = true;
+
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    private boolean handleWalletToBankTransaction(UUID walletId, UUID targetBankAccountId, double amount) throws OptimisticLockException {
+        boolean result = false;
+
+        BankAccount targetBankAccount = this.bankAccountService.get(targetBankAccountId);
+        Wallet wallet = this.get(walletId);
+
+        wallet.setBalance(wallet.getBalance() - amount);
+
+        // ToDo: write logic  to credit amount in BankAccount
+
+        this.update(wallet);
+        result = true;
+
+        return result;
     }
     //</editor-fold>
 }
