@@ -8,13 +8,10 @@ import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
 import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
-import com.makeprojects.ewallet.transactions.core.service.definition.TransactionService;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.BankAccountService;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.WalletService;
 import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountRequestDTO;
 import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountResponseDTO;
-import com.makeprojects.ewallet.useraccounts.dto.TransactionDto;
-import com.makeprojects.ewallet.useraccounts.mapper.TransactionMapper;
 import com.makeprojects.ewallet.useraccounts.database.repository.WalletRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,19 +30,14 @@ import java.util.stream.Collectors;
 public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
-    private final TransactionService transactionService;
     private final BankAccountService bankAccountService;
-    private final TransactionMapper transactionMapper;
 
     private static final String EMPTY_STRING = "";
 
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, TransactionService transactionService, BankAccountService bankAccountService,
-                             TransactionMapper transactionMapper) {
+    public WalletServiceImpl(WalletRepository walletRepository, BankAccountService bankAccountService) {
         this.walletRepository = walletRepository;
-        this.transactionService = transactionService;
         this.bankAccountService = bankAccountService;
-        this.transactionMapper = transactionMapper;
     }
 
     public boolean isLoggedInUserAccount(UUID accountId) {
@@ -250,20 +242,9 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Transaction sendMoney(TransactionDto transactionDto) {
-        Transaction transaction = this.transactionMapper.mapToTransaction(transactionDto);
-        Wallet senderAccount = transaction.getSenderAccount();
-        Wallet receiverAccount = transaction.getReceiverAccount();
-        Transaction createdTransaction = this.transactionService.create(transaction);
-        senderAccount.send(receiverAccount, transaction.getAmount());
-        this.walletRepository.saveAll(List.of(senderAccount, receiverAccount));
-        return createdTransaction;
-    }
-
-    @Override
     public List<Transaction> getMiniStatementOfUserWallet(UUID walletId) {
-        return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+//        return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+        throw new RuntimeException();
     }
 
     /**

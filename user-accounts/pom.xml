@@ -56,6 +56,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
 
         <!-- JWT dependencies -->
         <dependency>
@@ -78,11 +82,6 @@
         <dependency>
             <groupId>org.makeprojects</groupId>
             <artifactId>shared</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.makeprojects</groupId>
-            <artifactId>transactions</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
