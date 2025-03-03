@@ -17,7 +17,6 @@
 
     <modules>
         <module>user-accounts</module>
-        <module>transactions</module>
         <module>shared</module>
     </modules>
 
