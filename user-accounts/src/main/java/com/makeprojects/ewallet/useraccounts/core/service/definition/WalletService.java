@@ -4,7 +4,6 @@ import com.makeprojects.ewallet.shared.core.definition.CRUDService;
 import com.makeprojects.ewallet.shared.core.enums.transaction.TransactionEnums.TransactionType;
 import com.makeprojects.ewallet.shared.database.model.BankAccount;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
-import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountRequestDTO;
 import com.makeprojects.ewallet.useraccounts.dto.DTAccount.DTAccountResponseDTO;
@@ -25,7 +24,7 @@ public interface WalletService extends CRUDService<Wallet> {
 
     void saveWallets(Collection<Wallet> walletsCollection);
 
-    List<Transaction> getMiniStatementOfUserWallet(UUID walletId);
+    //List<Transaction> getMiniStatementOfUserWallet(UUID walletId);
 
     /**
      * Gets all linked bankAccounts

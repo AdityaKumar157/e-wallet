@@ -5,7 +5,6 @@ import com.makeprojects.ewallet.shared.core.enums.AccountEnums;
 import com.makeprojects.ewallet.shared.core.enums.transaction.TransactionEnums.TransactionType;
 import com.makeprojects.ewallet.shared.database.model.BankAccount;
 import com.makeprojects.ewallet.shared.exceptions.NotFoundException;
-import com.makeprojects.ewallet.shared.database.model.Transaction;
 import com.makeprojects.ewallet.shared.database.model.Wallet;
 import com.makeprojects.ewallet.shared.database.model.User;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.BankAccountService;
@@ -241,11 +240,11 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
-    @Override
-    public List<Transaction> getMiniStatementOfUserWallet(UUID walletId) {
-//        return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
-        throw new RuntimeException();
-    }
+//    @Override
+//    public List<Transaction> getMiniStatementOfUserWallet(UUID walletId) {
+////        return this.transactionService.getMiniStatement(walletId, Instant.now().minus(7, ChronoUnit.DAYS), Instant.now());
+//        throw new RuntimeException();
+//    }
 
     /**
      * Gets all linked bankAccounts
