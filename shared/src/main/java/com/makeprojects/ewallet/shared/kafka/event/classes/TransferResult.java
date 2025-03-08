@@ -1,4 +1,4 @@
-package com.makeprojects.ewallet.shared.event.classes;
+package com.makeprojects.ewallet.shared.kafka.event.classes;
 
 import lombok.*;
 
@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class TransferResult {
     private UUID transactionId;
     private boolean success;

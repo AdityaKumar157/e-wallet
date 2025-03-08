@@ -1,10 +1,7 @@
-package com.makeprojects.ewallet.shared.event.classes;
+package com.makeprojects.ewallet.shared.kafka.event.classes;
 
 import com.makeprojects.ewallet.shared.core.enums.transaction.TransactionEnums.TransactionType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class TransferEvent {
     private UUID transactionId;
     private UUID accountId; // The account initiating the transaction

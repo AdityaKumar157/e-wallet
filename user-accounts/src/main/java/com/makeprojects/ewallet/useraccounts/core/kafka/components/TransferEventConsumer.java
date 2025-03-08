@@ -1,7 +1,7 @@
 package com.makeprojects.ewallet.useraccounts.core.kafka.components;
 
-import com.makeprojects.ewallet.shared.event.classes.TransferEvent;
-import com.makeprojects.ewallet.shared.event.classes.TransferResult;
+import com.makeprojects.ewallet.shared.kafka.event.classes.TransferEvent;
+import com.makeprojects.ewallet.shared.kafka.event.classes.TransferResult;
 import com.makeprojects.ewallet.useraccounts.core.service.definition.WalletService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class TransferEventConsumer {
     }
 
     @KafkaListener(
-            topics = "transfer-events",
+            topics = "transfer-event",
             groupId = "user-accounts-group",
             concurrency = "3"  // Enables parallel processing for different partitions
     )
@@ -50,7 +50,7 @@ public class TransferEventConsumer {
             transferResult.setMessage(message);
 
             // Produce "transfer-results" event for TransferResultConsumer to consume
-            kafkaTemplate.send("transfer-results", partitionKey, transferResult);    // Maintain same partition key
+            kafkaTemplate.send("transfer-result", partitionKey, transferResult);    // Maintain same partition key
         } catch (Exception e) {
             log.error("Error processing transfer event: {}", transferEvent, e);
             transferResult.setSuccess(false);
