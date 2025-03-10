@@ -12,3 +12,22 @@ spring:
     username: "postgres"
     password: "admin"
     driver-class-name: "org.postgresql.Driver"
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    producer:
+      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+    consumer:
+#      key-serializer: "org.apache.kafka.common.serialization.StringSerializer"
+#      value-serializer: "org.apache.kafka.common.serialization.JsonSerializer"
+      key-deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+      value-deserializer: "org.springframework.kafka.support.serializer.ErrorHandlingDeserializer"
+      properties:
+        spring:
+          deserializer:
+            value:
+              delegate: "org.springframework.kafka.support.serializer.JsonDeserializer"
+          json:
+            trusted:
+              packages: "com.makeprojects.ewallet.shared.kafka.event.classes"
+      group-id: "user-accounts-group"

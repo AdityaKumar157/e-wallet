@@ -12,9 +12,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "com.makeprojects.ewallet.shared.database.model")
 @ComponentScan(basePackages = {
         "com.makeprojects.ewallet.useraccounts",
-        "com.makeprojects.ewallet.shared",
-        "com.makeprojects.ewallet.transactions"
+        "com.makeprojects.ewallet.shared"
 })
+//@Import(KafkaConfig.class)
+//@EnableKafka
 public class UserAccountsApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserAccountsApplication.class, args);
