@@ -1,5 +1,6 @@
 package com.makeprojects.ewallet.shared.database.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,9 @@ public class User {
 
     @Column(unique = true)
     private String phone;
+
+    @Column(nullable = true, unique = true)
+    private String email;
 
     private String password;
 
